@@ -1,6 +1,11 @@
 #include <stdio.h>
 
 
+int toto()
+{
+    
+}
+
 int main()
 {
 
