@@ -21,9 +21,8 @@ all: mini
 %.o: %.c ${INC}
 	$(CC) $(CFLAGS) -o $@ -c $<
 	
-
 mini:${OBJS} 
 	${CC} $(CFLAGS) $^ -o $@
 
 clean: 
-	rm -f *.o philo *.gch
+	rm -f *.o mini *.gch
