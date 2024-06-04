@@ -17,6 +17,7 @@ typedef enum _BOOL
 } BOOL;
 
 
+
 //Stucture pour nos tokens
 typedef struct _token
 {
