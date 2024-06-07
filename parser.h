@@ -1,10 +1,10 @@
 #ifndef _PARSER_H
 #define _PARSER_H
 
-
 //3 Mode de parsing
-typedef enum _ParsingMode {
-  UNQUOTED=0,         //Pas de guillemet 
+typedef enum _ParsingMode 
+{
+  UNQUOTED = 0,         //Pas de guillemet 
   SINGLEQUOTED,     //Entre guillemets simple
   DOUBLEQUOTED      //Entre guillemets double
 } ParsingMode; 
@@ -12,7 +12,7 @@ typedef enum _ParsingMode {
 //Pour rendre le code lisible, un enum pour les boolens VRAI/FAUX
 typedef enum _BOOL
 {
-    FALSE=0,
+    FALSE = 0,
     TRUE
 } BOOL;
 
@@ -29,15 +29,15 @@ typedef struct _token
 //Tableau dynamique de pointeurs sur tokens
 typedef struct _TokenTable
 {
-    Token **tokens;
-    int size;
-    int mem_size;
+    Token **tokens; 
+    int size; //Nombre de tokens
+    int mem_size; // Taille du tableau
 } TokenTable;
 
 typedef struct _TokenNode
 {
-    TokenTable *table;
-    struct _TokenNode *left;
+    TokenTable *table; 
+    struct _TokenNode *left; 
     struct _TokenNode *right;
 } TokenNode;
 

@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <string.h> //memcpy
-
+#include <string.h> 
 #include "parser.h"
 
 
@@ -15,7 +14,7 @@ Token *createToken()
     return t;
 }
 
-void destroyToken(Token *t)
+void destroyToken(Token *t) //Détruit un token
 {
     free(t->str);
     t->size=0;
@@ -38,22 +37,22 @@ void push_char(Token *t,char c)
 }
 
 
-TokenTable *createTokenTable()
+TokenTable *createTokenTable()//Créer un tableau de tokens
 {
     TokenTable *table=(TokenTable *)malloc(sizeof(TokenTable));
-    table->mem_size=5;
-    table->size=0;
+    table->mem_size = 5;
+    table->size = 0;
     table->tokens=(Token **)malloc(sizeof(Token *)*table->mem_size);
     return table;
 }
 
 
-void push_token(TokenTable* table, Token *t)
+void push_token(TokenTable* table, Token *t)//Ajout d'un token dans le tableau de tokens (agrandi et réalloue si nécessaire)
 {
     if(table->size >= table->mem_size )
     {
-        char *old_tokens=t->str;
-        table->mem_size*=2;
+        char *old_tokens = t->str;
+        table->mem_size *= 2; 
         table->tokens=(Token **)malloc(sizeof(Token *)*t->mem_size);
         memcpy(table->tokens,old_tokens,table->size);
         free(old_tokens);
@@ -65,7 +64,7 @@ void push_token(TokenTable* table, Token *t)
     table->size++;
 }
 
-void destroyTokenTable(TokenTable *table)
+void destroyTokenTable(TokenTable *table) //detruire le tableau de tokens
 {
     int i=0;
     while(i<table->size)
@@ -77,7 +76,7 @@ void destroyTokenTable(TokenTable *table)
 }
 
 
-TokenNode *createTokenNode()
+TokenNode *createTokenNode() //Créer un noeud d'arbre
 {
     TokenNode *token_node=(TokenNode *)malloc(sizeof(TokenNode));
     token_node->table=createTokenTable();
@@ -87,9 +86,9 @@ TokenNode *createTokenNode()
 }
 
 
-void detroyTokenNode(TokenNode *nd)
+void detroyTokenNode(TokenNode *nd) //Détruire l'arbre
 {
-    if ( nd!=NULL)
+    if (nd != NULL)
     {
         destroyTokenTable(nd->table);
         detroyTokenNode(nd->left);
@@ -97,25 +96,25 @@ void detroyTokenNode(TokenNode *nd)
     }
 }
 
-BOOL is_equal(char* a,char *b)
+BOOL is_equal(char* a,char *b) //Renvoie TRUE si 2 chaine sont identiques
 {
     int i;
     i=0;
-    while(a[i]!='\0'&&b[i]!='\0'&&a[i]==b[i])
+    while(a[i] != '\0' && b[i] != '\0' && a[i] == b[i])
     {
         i++;
     }
-    return a[i]=='\0'&&b[i]=='\0' ? TRUE:FALSE;
+    return a[i] == '\0' && b[i] == '\0' ? TRUE:FALSE;
 }
 
-void printTokenNode(TokenNode *nd)
+void printTokenNode(TokenNode *nd) //Afficher sur le terminal l'arbre 
 {
-    if(nd!=NULL)
+    if(nd != NULL)
     {
         printTokenNode(nd->left);
         printTokenNode(nd->right);
         int i=0;
-        while(i<nd->table->size)
+        while(i < nd->table->size)
         {
             printf("%s#",nd->table->tokens[i]->str);
             i++;
@@ -124,7 +123,8 @@ void printTokenNode(TokenNode *nd)
 }
 
 
-void concatenateTree(TokenNode *nd,Token *result)
+void concatenateTree(TokenNode *nd,Token *result) //Concatène les tokens de l'arbre 
+                                                //dans un seul token avec des # pour les separer(pour les teste)
 {
     int i;
     int j;
@@ -149,20 +149,19 @@ void concatenateTree(TokenNode *nd,Token *result)
 
 
 
-int is_special_unquote(char c)
+BOOL is_special_unquote(char c)
 {
-    return (c==' '||c=='"'||c=='\''||c=='|'||c==';'||c=='<'||c=='>'||c=='\\'||c=='$');
+    return (c ==' '||c=='"'||c=='\''||c=='|'||c==';'||c=='<'||c=='>'||c=='\\'||c=='$');
 }
 
-int is_special_singlequote(char c)
+BOOL is_special_singlequote(char c)
 {
-    return (c=='\''||c=='\\');
+    return (c == '\''|| c == '\\');
 }
 
-
-int is_special_doublequote(char c)
+BOOL is_special_doublequote(char c)
 {
-    return (c=='"'||c=='\''||c=='$');
+    return (c == '"'|| c == '\\'||c == '$');
 }
 
 
@@ -172,19 +171,19 @@ int is_special_doublequote(char c)
 //Les Tokens doivent être "free" ainsi que le tableau par l'appelant
 TokenNode*parse_line(char *line)
 {
-    TokenNode *root=createTokenNode();
-    TokenNode *current_node=root;
+    TokenNode *root = createTokenNode();
+    TokenNode *current_node = root;
 
-    int i=0;
+    int i = 0;
 
-    //O:UNQUOTED/1:SINGLEQUOTED/2:DOUBLEQUOTED
-    // UNQUOTED : Pas de guillemet / SINGLEQUOTED : entre guillemet simple / DOUBLEQUOTED : entre guillemets double
-    ParsingMode mode=UNQUOTED; 
-    Token *token=NULL; //Token en cours 
-    BOOL is_backslashed=FALSE; 
+    //O:UNQUOTE/1:SINGLEQUOTE/2:DOUBLEQUOTE
+    // UNQUOTE : Pas de guillemet / SINGLEQUOTE : entre guillemet simple / DOUBLEQUOTE : entre guillemets double
+    ParsingMode mode = UNQUOTED; 
+    Token *token = NULL; //Token en cours 
+    BOOL is_backslashed = FALSE; 
     while(line[i]!='\0')
     {
-        char c=line[i];
+        char c = line[i];
         i++; 
 
         //Si ca n'est pas un caratère spéciale et qu'il n'a pas été baskslaché
@@ -213,19 +212,19 @@ TokenNode*parse_line(char *line)
             // c=='\''
             mode=UNQUOTED;
             push_token(current_node->table,token);
-            token=NULL;
+            token = NULL;
             continue;
         }
 
-        if (mode==DOUBLEQUOTED) //Mode Simple Guillemets
+        if (mode == DOUBLEQUOTED) //Mode Simple Guillemets
         {
-            if( c=='$')
+            if( c == '$')
             {
                 //TODO
             }
             else // c=='"'
             {
-                mode=UNQUOTED;
+                mode = UNQUOTED;
                 push_token(current_node->table,token);
                 token=NULL;
             }
@@ -233,35 +232,35 @@ TokenNode*parse_line(char *line)
         }
 
         //Mode UNQUOTED
-        if ( c=='"' || c=='\'')
+        if ( c == '"' || c == '\'')
         {
-            mode=(c=='"')? DOUBLEQUOTED : SINGLEQUOTED;
+            mode = (c == '"') ? DOUBLEQUOTED : SINGLEQUOTED;
             continue;
         }
 
-        if ( c=='$')
+        if ( c == '$')
         {
 
             continue;
         }
 
-        if ( c==' ' || c==';' || c=='|' || c=='<' || c== '\'' )
+        if ( c==' ' || c==';' || c=='|' || c=='<')
         {
-            if ( token!=NULL )
+            if ( token != NULL )
             {
                 push_token(current_node->table,token);
                 token=NULL;
             }
 
-            if ( 0)//c!=' ' )
+            if ( c !=' ' )
             {
-                current_node->left=createTokenNode();
-                current_node->right=createTokenNode();
+                current_node->left = createTokenNode();
+                current_node->right = createTokenNode();
 
                 //On permute la table entre le parent et l'enfant gauche
-                TokenTable *tmp=current_node->table;
-                current_node->table=current_node->left->table;
-                current_node->left->table=tmp;
+                TokenTable *tmp = current_node->table;
+                current_node->table = current_node->left->table;
+                current_node->left->table = tmp;
 
                 //Ajout token 'c'
                 token=createToken();
